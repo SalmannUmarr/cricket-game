@@ -10,24 +10,38 @@ import './App.css';
 function App() {
     const { stats, updateGame, restartGame } = useGameLogic();
     const [currentStyle, setCurrentStyle] = useState(BATTING_STYLES.DEFENSIVE);
+    const [isBowling, setIsBowling] = useState(false);
+
+    const handleShotAttempt = (outcome) => {
+        // Prevent multiple clicks while ball is in the air
+        if (stats.isGameOver || isBowling) return;
+
+        setIsBowling(true);
+
+        // Timing: 1000ms matches the CSS animation duration
+        setTimeout(() => {
+            updateGame(outcome);
+            setIsBowling(false);
+        }, 1000);
+    };
 
     return (
         <div className="game-container">
             <h1>2D Cricket Championship</h1>
 
-            {/* Pass stats to Scoreboard */}
             <Scoreboard stats={stats} />
 
-            <GameCanvas />
-
-            {/* PowerBar will eventually need currentStyle and updateGame */}
-            <PowerBar
-                currentStyle={currentStyle}
-                onShotPlayed={updateGame}
-                isGameOver={stats.isGameOver}
+            <GameCanvas
+                stats={stats}
+                isBowling={isBowling}
             />
 
-            {/* Controls to switch styles and restart */}
+            <PowerBar
+                currentStyle={currentStyle}
+                onShotPlayed={handleShotAttempt}
+                isGameOver={stats.isGameOver || isBowling}
+            />
+
             <Controls
                 currentStyle={currentStyle}
                 setCurrentStyle={setCurrentStyle}
