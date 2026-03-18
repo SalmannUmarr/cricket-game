@@ -9,16 +9,18 @@ export const useGameLogic = () => {
         lastOutcome: null
     });
 
-    const totalOvers = 2;
-    const maxBalls = totalOvers * 6; // 12 balls [cite: 51]
-    const maxWickets = 2; // [cite: 52]
+    const totalOvers = 2; // [cite: 51, 83]
+    const maxBalls = totalOvers * 6; // 12 balls [cite: 51, 83]
+    const maxWickets = 2; // [cite: 52, 84]
 
     const updateGame = (outcome) => {
-        if (stats.isGameOver) return;
-
         setStats((prev) => {
-            const newWickets = outcome === 'wicket' ? prev.wickets + 1 : prev.wickets;
-            const newRuns = outcome === 'wicket' ? prev.runs : prev.runs + parseInt(outcome);
+            if (prev.isGameOver) return prev;
+
+            const isWicket = outcome === 'wicket';
+            const newWickets = isWicket ? prev.wickets + 1 : prev.wickets;
+            const runValue = isWicket ? 0 : Number(outcome);
+            const newRuns = prev.runs + runValue;
             const newBalls = prev.ballsPlayed + 1;
 
             const gameOver = newWickets >= maxWickets || newBalls >= maxBalls;
