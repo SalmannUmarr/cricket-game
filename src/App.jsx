@@ -3,6 +3,7 @@ import Scoreboard from './components/Scoreboard';
 import GameCanvas from './components/GameCanvas';
 import PowerBar from './components/PowerBar';
 import Controls from './components/Controls';
+import Commentary from './components/Commentary';
 import { useGameLogic } from './hooks/useGameLogic';
 import { BATTING_STYLES } from './constants/probabilities';
 import './App.css';
@@ -13,12 +14,12 @@ function App() {
     const [isBowling, setIsBowling] = useState(false);
 
     const handleShotAttempt = (outcome) => {
-        // Prevent multiple clicks while ball is in the air
         if (stats.isGameOver || isBowling) return;
 
+        // Start bowling animation
         setIsBowling(true);
 
-        // Timing: 1000ms matches the CSS animation duration
+        // Synchronize score update with ball reaching the batsman (1s)
         setTimeout(() => {
             updateGame(outcome);
             setIsBowling(false);
@@ -35,6 +36,8 @@ function App() {
                 stats={stats}
                 isBowling={isBowling}
             />
+
+            <Commentary message={stats.commentary} />
 
             <PowerBar
                 currentStyle={currentStyle}

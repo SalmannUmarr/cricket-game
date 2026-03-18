@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { COMMENTARY_DATABASE } from '../constants/commentary';
 
 export const useGameLogic = () => {
     const [stats, setStats] = useState({
@@ -6,12 +7,13 @@ export const useGameLogic = () => {
         wickets: 0,
         ballsPlayed: 0,
         isGameOver: false,
-        lastOutcome: null
+        lastOutcome: null,
+        commentary: "Welcome to the Championship! Choose a style and play."
     });
 
-    const totalOvers = 2; // [cite: 51, 83]
-    const maxBalls = totalOvers * 6; // 12 balls [cite: 51, 83]
-    const maxWickets = 2; // [cite: 52, 84]
+    const totalOvers = 2;
+    const maxBalls = totalOvers * 6; // 12 balls
+    const maxWickets = 2;
 
     const updateGame = (outcome) => {
         setStats((prev) => {
@@ -25,18 +27,30 @@ export const useGameLogic = () => {
 
             const gameOver = newWickets >= maxWickets || newBalls >= maxBalls;
 
+            // Bonus: Select random commentary based on outcome
+            const messages = COMMENTARY_DATABASE[outcome];
+            const randomMsg = messages[Math.floor(Math.random() * messages.length)];
+
             return {
                 runs: newRuns,
                 wickets: newWickets,
                 ballsPlayed: newBalls,
                 isGameOver: gameOver,
-                lastOutcome: outcome
+                lastOutcome: outcome,
+                commentary: randomMsg
             };
         });
     };
 
     const restartGame = () => {
-        setStats({ runs: 0, wickets: 0, ballsPlayed: 0, isGameOver: false, lastOutcome: null });
+        setStats({
+            runs: 0,
+            wickets: 0,
+            ballsPlayed: 0,
+            isGameOver: false,
+            lastOutcome: null,
+            commentary: "New Game Started! Good luck."
+        });
     };
 
     return { stats, updateGame, restartGame, maxBalls, maxWickets };
